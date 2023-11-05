@@ -1,15 +1,16 @@
 import 'package:dblabs_api/dblabs_api.dart';
 import 'api_exception.dart';
+import 'table.dart';
 
 abstract base class ApiRepository {
   ApiClient get client;
 
   void dispose();
 
-  Future<void> alterDatabase(
-    String databaseName,
-    ReadOnly readOnly,
-  ) async {
+  Future<void> alterDatabase({
+    required String databaseName,
+    ReadOnly? readOnly,
+  }) async {
     OkResponse response = await client.alterDatabase(AlterDatabaseRequest(
       databaseName: databaseName,
       readOnly: readOnly,
@@ -17,28 +18,28 @@ abstract base class ApiRepository {
     if (!response.ok) throw ApiException.fromResponseError(response.error);
   }
 
-  Future<void> createDatabase(
-    String databaseName,
-  ) async {
+  Future<void> createDatabase({
+    required String databaseName,
+  }) async {
     OkResponse response = await client.createDatabase(CreateDatabaseRequest(
       databaseName: databaseName,
     ));
     if (!response.ok) throw ApiException.fromResponseError(response.error);
   }
 
-  Future<void> dropDatabase(
-    String databaseName,
-  ) async {
+  Future<void> dropDatabase({
+    required String databaseName,
+  }) async {
     OkResponse response = await client.dropDatabase(DropDatabaseRequest(
       databaseName: databaseName,
     ));
     if (!response.ok) throw ApiException.fromResponseError(response.error);
   }
 
-  Future<void> alterTable(
-    String tableName,
-    Iterable<AlterTableOption> options,
-  ) async {
+  Future<void> alterTable({
+    required String tableName,
+    required Iterable<AlterTableOption> options,
+  }) async {
     OkResponse response = await client.alterTable(AlterTableRequest(
       tableName: tableName,
       options: options,
@@ -46,10 +47,10 @@ abstract base class ApiRepository {
     if (!response.ok) throw ApiException.fromResponseError(response.error);
   }
 
-  Future<void> createTable(
-    String tableName,
-    Iterable<CreateTableOption> options,
-  ) async {
+  Future<void> createTable({
+    required String tableName,
+    required Iterable<CreateTableOption> options,
+  }) async {
     OkResponse response = await client.createTable(CreateTableRequest(
       tableName: tableName,
       options: options,
@@ -57,19 +58,19 @@ abstract base class ApiRepository {
     if (!response.ok) throw ApiException.fromResponseError(response.error);
   }
 
-  Future<void> dropTable(
-    String tableName,
-  ) async {
+  Future<void> dropTable({
+    required String tableName,
+  }) async {
     OkResponse response = await client.dropTable(DropTableRequest(
       tableName: tableName,
     ));
     if (!response.ok) throw ApiException.fromResponseError(response.error);
   }
 
-  Future<void> renameTable(
-    String oldTableName,
-    String newTableName,
-  ) async {
+  Future<void> renameTable({
+    required String oldTableName,
+    required String newTableName,
+  }) async {
     OkResponse response = await client.renameTable(RenameTableRequest(
       oldTableName: oldTableName,
       newTableName: newTableName,
@@ -77,12 +78,103 @@ abstract base class ApiRepository {
     if (!response.ok) throw ApiException.fromResponseError(response.error);
   }
 
-  Future<void> truncateTable(
-    String tableName,
-  ) async {
+  Future<void> truncateTable({
+    required String tableName,
+  }) async {
     OkResponse response = await client.truncateTable(TruncateTableRequest(
       tableName: tableName,
     ));
     if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> delete({
+    required String tableName,
+    String? tableAlias,
+    String? whereCondition,
+    OrderBy? orderBy,
+    int? limit,
+  }) async {
+    OkResponse response = await client.delete(DeleteRequest(
+      tableName: tableName,
+      tableAlias: tableAlias,
+      whereCondition: whereCondition,
+      orderBy: orderBy,
+      limit: limit,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> update({
+    required String tableName,
+    required AssignmentList assignmentList,
+    String? whereCondition,
+    OrderBy? orderBy,
+    int? limit,
+  }) async {
+    OkResponse response = await client.update(UpdateRequest(
+      tableName: tableName,
+      assignmentList: assignmentList,
+      whereCondition: whereCondition,
+      orderBy: orderBy,
+      limit: limit,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> insert({
+    required String tableName,
+    required InsertType insertType,
+    Iterable<String>? columnNames,
+    SelectData? selectData,
+    String? otherTableName,
+    RowConstructorList? rowConstructorList,
+    AssignmentList? onDuplicateKeyUpdate,
+  }) async {
+    OkResponse response = await client.insert(InsertRequest(
+      tableName: tableName,
+      columnNames: columnNames,
+      insertType: insertType,
+      selectData: selectData,
+      otherTableName: otherTableName,
+      rowConstructorList: rowConstructorList,
+      onDuplicateKeyUpdate: onDuplicateKeyUpdate,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<Table> select({
+    required SelectData selectData,
+  }) async {
+    TableResponse response = await client.select(SelectRequest(
+      selectData: selectData,
+    ));
+    return response.ok
+        ? Table.fromJson(selectData.columnNames, response.data)
+        : throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<Table> join({
+    required Iterable<String> columnNames,
+    required String firstTableName,
+    required String secondTableName,
+    required Join join,
+    String? firstTableAlias,
+    String? secondTableAlias,
+    String? whereCondition,
+    OrderBy? orderBy,
+  }) async {
+    TableResponse response = await client.join(JoinRequest(
+      columnNames: columnNames,
+      join: join,
+      firstTableName: firstTableName,
+      secondTableName: secondTableName,
+      firstTableAlias: firstTableAlias,
+      secondTableAlias: secondTableAlias,
+      whereCondition: whereCondition,
+      orderBy: orderBy,
+    ));
+    return response.ok
+        ? Table.fromJson(columnNames.toList(), response.data)
+        : throw ApiException.fromResponseError(response.error);
   }
 }

@@ -7,6 +7,7 @@ import 'src/dblabs_api_repo_base.dart';
 
 export 'package:dblabs_api/dblabs_api.dart';
 export 'src/api_exception.dart';
+export 'src/table.dart';
 export 'src/dblabs_api_repo_base.dart';
 
 final class ApiRepositoryImpl extends ApiRepository {
