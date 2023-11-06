@@ -179,7 +179,7 @@ abstract base class ApiRepository {
   }
 
   Future<Table> showDatabases({
-    bool showSys = false,
+    bool? showSys,
   }) async {
     TableResponse response = await client.showDatabases(ShowDatabasesRequest(
       showSys: showSys,
