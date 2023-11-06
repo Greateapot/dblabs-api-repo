@@ -177,4 +177,51 @@ abstract base class ApiRepository {
         ? Table.fromJson(columnNames.toList(), response.data)
         : throw ApiException.fromResponseError(response.error);
   }
+
+  Future<Table> showDatabases({
+    bool showSys = false,
+  }) async {
+    TableResponse response = await client.showDatabases(ShowDatabasesRequest(
+      showSys: showSys,
+    ));
+    return response.ok
+        ? Table.fromJson(["SCHEMA_NAME"], response.data)
+        : throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<Table> showTables({
+    required String databaseName,
+  }) async {
+    TableResponse response = await client.showTables(ShowTablesRequest(
+      databaseName: databaseName,
+    ));
+    return response.ok
+        ? Table.fromJson(["TABLE_NAME"], response.data)
+        : throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<Table> showTableStruct({
+    required String databaseName,
+    required String tableName,
+  }) async {
+    TableResponse response = await client.showTableStruct(
+      ShowTableStructRequest(
+        databaseName: databaseName,
+        tableName: tableName,
+      ),
+    );
+    return response.ok
+        ? Table.fromJson(
+            [
+              "COLUMN_NAME",
+              "COLUMN_TYPE",
+              "IS_NULLABLE",
+              "COLUMN_KEY",
+              "COLUMN_DEFAULT",
+              "EXTRA",
+            ],
+            response.data,
+          )
+        : throw ApiException.fromResponseError(response.error);
+  }
 }
