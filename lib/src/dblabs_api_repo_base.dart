@@ -7,6 +7,34 @@ abstract base class ApiRepository {
 
   void dispose();
 
+  Future<void> createTrigger({
+    required String triggerName,
+    required TriggerTimeType triggerTime,
+    required TriggerEventType triggerEvent,
+    required String tableName,
+    required String triggerBody,
+    TriggerOrder? triggerOrder,
+  }) async {
+    OkResponse response = await client.createTrigger(CreateTriggerRequest(
+      triggerName: triggerName,
+      triggerTime: triggerTime,
+      triggerEvent: triggerEvent,
+      tableName: tableName,
+      triggerBody: triggerBody,
+      triggerOrder: triggerOrder,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> dropTrigger({
+    required String triggerName,
+  }) async {
+    OkResponse response = await client.dropTrigger(DropTriggerRequest(
+      triggerName: triggerName,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
   Future<void> alterDatabase({
     required String databaseName,
     ReadOnly? readOnly,
