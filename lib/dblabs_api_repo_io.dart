@@ -19,8 +19,8 @@ final class ApiRepositoryImpl extends ApiRepository {
     String host, {
     int port = 5555,
     bool isSecure = false,
-  }) =>
-      ApiRepositoryImpl.fromChannel(
+  }) {
+    final instance = ApiRepositoryImpl.fromChannel(
         ClientChannel(
           host,
           port: port,
@@ -31,6 +31,9 @@ final class ApiRepositoryImpl extends ApiRepository {
           ),
         ),
       );
+    ApiRepository.instance = instance;
+    return instance;
+  }
 
   final ClientChannel _channel;
   final ApiClient _client;

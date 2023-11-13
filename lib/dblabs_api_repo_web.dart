@@ -19,12 +19,15 @@ final class ApiRepositoryImpl extends ApiRepository {
     String host, {
     int port = 80,
     bool isSecure = false,
-  }) =>
-      ApiRepositoryImpl.fromChannel(
-        GrpcWebClientChannel.xhr(
-          Uri.parse('http${isSecure ? 's' : ''}://$host:$port/'),
-        ),
-      );
+  }) {
+    final instance = ApiRepositoryImpl.fromChannel(
+      GrpcWebClientChannel.xhr(
+        Uri.parse('http${isSecure ? 's' : ''}://$host:$port/'),
+      ),
+    );
+    ApiRepository.instance = instance;
+    return instance;
+  }
 
   final GrpcWebClientChannel _channel;
   final ApiClient _client;

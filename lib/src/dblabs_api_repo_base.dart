@@ -5,7 +5,59 @@ import 'table.dart';
 abstract base class ApiRepository {
   ApiClient get client;
 
+  static ApiRepository? _instance;
+
+  static ApiRepository get instance =>
+      _instance != null ? _instance! : throw Exception("No instance created");
+
+  static set instance(ApiRepository instance) => _instance = instance;
+
   void dispose();
+
+  Future<void> createView({
+    required String viewName,
+    required SelectData selectData,
+    List<String>? columnList,
+    ViewAlgorithmType? algorithm,
+    ViewWithCheckOptionType? withCheckOption,
+    bool? orReplace,
+  }) async {
+    OkResponse response = await client.createView(CreateViewRequest(
+      viewName: viewName,
+      columnList: columnList,
+      selectData: selectData,
+      algorithm: algorithm,
+      withCheckOption: withCheckOption,
+      orReplace: orReplace,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> alterView({
+    required String viewName,
+    required SelectData selectData,
+    List<String>? columnList,
+    ViewAlgorithmType? algorithm,
+    ViewWithCheckOptionType? withCheckOption,
+  }) async {
+    OkResponse response = await client.alterView(AlterViewRequest(
+      viewName: viewName,
+      columnList: columnList,
+      selectData: selectData,
+      algorithm: algorithm,
+      withCheckOption: withCheckOption,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> dropView({
+    required String viewName,
+  }) async {
+    OkResponse response = await client.dropView(DropViewRequest(
+      viewName: viewName,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
 
   Future<void> createTrigger({
     required String triggerName,
