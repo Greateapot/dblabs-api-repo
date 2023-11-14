@@ -14,6 +14,48 @@ abstract base class ApiRepository {
 
   void dispose();
 
+  Future<void> dropProcedure({
+    required String procedureName,
+  }) async {
+    OkResponse response = await client.dropProcedure(DropProcedureRequest(
+      procedureName: procedureName,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> createProcedure({
+    required String procedureName,
+    required String routineBody,
+    Iterable<ProcedureParameter>? procedureParameters,
+  }) async {
+    OkResponse response = await client.createProcedure(CreateProcedureRequest(
+      procedureName: procedureName,
+      procedureParameters: procedureParameters,
+      routineBody: routineBody,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> callProcedure({
+    required String expr,
+  }) async {
+    OkResponse response = await client.callProcedure(CallProcedureRequest(
+      expr: expr,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
+  Future<void> set({
+    required String varName,
+    required String expr,
+  }) async {
+    OkResponse response = await client.set(SetRequest(
+      varName: varName,
+      expr: expr,
+    ));
+    if (!response.ok) throw ApiException.fromResponseError(response.error);
+  }
+
   Future<void> createView({
     required String viewName,
     required SelectData selectData,
